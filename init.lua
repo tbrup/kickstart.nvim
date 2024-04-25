@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -127,6 +127,9 @@ vim.opt.smartcase = true
 
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
+
+-- highlight column 80
+vim.opt.colorcolumn = '80'
 
 -- Decrease update time
 vim.opt.updatetime = 250
@@ -190,6 +193,35 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- some stuff stolen from the primagen ThePrimeagen/init.lua
+vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = 'git (status)' })
+-- make yank from / copy to clipboard easier
+-- paste over a highlighted region with the register, keep register
+vim.keymap.set('x', '<leader>p', '"_dP', { desc = 'paste over highlighted region' })
+vim.keymap.set('n', '<leader>y', '"+y', { desc = 'yank to clipboard' })
+vim.keymap.set('v', '<leader>y', '"+y', { desc = 'yank to clipboard' })
+vim.keymap.set('n', '<leader>Y', '"+Y', { desc = 'Yank line to clipboard' })
+vim.keymap.set('n', '<leader>di', '"_d', { desc = 'delete, switch to insert' })
+vim.keymap.set('v', '<leader>di', '"_d', { desc = 'delete, switch to insert' })
+
+-- some more from the ThePrimeagen
+-- mode blocks in visual mode up/down
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+
+-- keep cursor at front for J
+vim.keymap.set('n', 'J', 'mzJ`z')
+
+-- keep cursor in the middle of the page when moving half pages or searching
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
+vim.keymap.set('n', 'n', 'nzzzv')
+vim.keymap.set('n', 'N', 'Nzzzv')
+
+-- some stuff for the LSP
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open diagnostic' })
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Add diagnostic to loclist' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -248,6 +280,16 @@ require('lazy').setup({
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
+      -- if vim.g.have_nerd_font then
+      -- signs = {
+      --   add = { text = '▎' },
+      --   change = { text = '▎' },
+      --   delete = { text = '' },
+      --   topdelete = { text = '' },
+      --   changedelete = { text = '▎' },
+      --   untracked = { text = '▎' },
+      -- },
+      -- else
       signs = {
         add = { text = '+' },
         change = { text = '~' },
@@ -255,7 +297,16 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      -- end ,
     },
+  },
+
+  { 'tpope/vim-fugitive' },
+
+  {
+    'kaarmu/typst.vim',
+    ft = 'typst',
+    lazy = false,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -381,7 +432,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>,', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -773,23 +824,35 @@ require('lazy').setup({
     end,
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+  {
+    'shaunsingh/solarized.nvim',
+    lazy = false,
+    priority = 1000,
+    config = function()
+      -- choose light solarized
+      vim.g.solarized_disable_background = false
+      vim.opt.background = 'light'
+      require('solarized').set()
+      -- require('lualine').setup { options = { theme = 'solarized_light' } }
     end,
   },
+  -- { -- You can easily change to a different colorscheme.
+  --   -- Change the name of the colorscheme plugin below, and then
+  --   -- change the command in the config to whatever the name of that colorscheme is.
+  --   --
+  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  --   init = function()
+  --     -- Load the colorscheme here.
+  --     -- Like many other themes, this one has different styles, and you could load
+  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --     vim.cmd.colorscheme 'tokyonight-day'
+  --
+  --     -- You can configure highlights by doing something like:
+  --     vim.cmd.hi 'Comment gui=none'
+  --   end,
+  -- },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -829,6 +892,16 @@ require('lazy').setup({
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
+
+      require('mini.bufremove').setup()
+
+      local br = require 'mini.bufremove'
+      vim.keymap.set('n', '<leader>bd', function()
+        br.delete(0, false)
+      end, { desc = 'Delete Buffer' })
+      vim.keymap.set('n', '<leader>bD', function()
+        br.delete(0, true)
+      end, { desc = 'Delete Buffer (Force)' })
     end,
   },
   { -- Highlight, edit, and navigate code
@@ -864,6 +937,62 @@ require('lazy').setup({
     end,
   },
 
+  -- use oil as the file manager
+  {
+    'stevearc/oil.nvim',
+    opts = {
+      columns = {
+        'icon',
+        -- "permissions",
+      },
+      win_options = {
+        signcolumn = 'yes',
+      },
+      default_file_explorer = true,
+      view_options = {
+        show_hidden = true,
+      },
+      keymaps = {
+        ['<TAB>'] = 'actions.preview',
+        ['.'] = 'actions.cd',
+      },
+    },
+    -- Optional dependencies
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    -- stylua ignore
+    keys = {
+      {
+        '<leader>pv',
+        function()
+          require('oil').open()
+        end,
+        desc = 'oil file browser',
+      },
+    },
+  },
+  { 'kaarmu/typst.vim', ft = 'typst', lazy = false },
+  { 'simnalamburt/vim-mundo', lazy = false, keys = { { '<leader>U', '<cmd>MundoToggle<CR>', { desc = 'Toggle undo buffer' } } } },
+  {
+    'cuducos/yaml.nvim',
+    ft = { 'yaml' }, -- optional
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-telescope/telescope.nvim', -- optional
+    },
+  },
+  {
+    'diogo464/kubernetes.nvim',
+    -- yamlls = {
+    --   yaml = {
+    --     schemas = {
+    --       -- use this if you want to match all '*.yaml' files
+    --       [require("kubernetes").yamlls_schema()] = "*.yaml",
+    --       -- -- or this to only match '*.<resource>.yaml' files. ex: 'app.deployment.yaml', 'app.argocd.yaml', ...
+    --       -- [require('kubernetes').yamlls_schema()] = require('kubernetes').yamlls_filetypes()
+    --     },
+    --   },
+    -- },
+  },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
