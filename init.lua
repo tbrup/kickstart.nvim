@@ -463,7 +463,20 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
-      { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
+      {
+        'williamboman/mason.nvim',
+        config = true,
+        keys = { { '<leader>cm', '<cmd>Mason<cr>', desc = 'Mason' } },
+        opts = {
+          ui = {
+            icons = {
+              package_installed = '✓',
+              package_pending = '➜',
+              package_uninstalled = '✗',
+            },
+          },
+        },
+      }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
@@ -826,6 +839,7 @@ require('lazy').setup({
 
   {
     'shaunsingh/solarized.nvim',
+    dependencies = { 'nvim-lualine/lualine.nvim' },
     lazy = false,
     priority = 1000,
     config = function()
@@ -833,7 +847,7 @@ require('lazy').setup({
       vim.g.solarized_disable_background = false
       vim.opt.background = 'light'
       require('solarized').set()
-      -- require('lualine').setup { options = { theme = 'solarized_light' } }
+      require('lualine').setup { options = { theme = 'solarized_light' } }
     end,
   },
   -- { -- You can easily change to a different colorscheme.
@@ -875,20 +889,20 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- -- Simple and easy statusline.
+      -- --  You could remove this setup call if you don't like it,
+      -- --  and try some other statusline plugin
+      -- local statusline = require 'mini.statusline'
+      -- -- set use_icons to true if you have a Nerd Font
+      -- statusline.setup { use_icons = vim.g.have_nerd_font, theme = 'solarized_light' }
+      --
+      -- -- You can configure sections in the statusline by overriding their
+      -- -- default behavior. For example, here we set the section for
+      -- -- cursor location to LINE:COLUMN
+      -- ---@diagnostic disable-next-line: duplicate-set-field
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
