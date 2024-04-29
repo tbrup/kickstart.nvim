@@ -60,5 +60,25 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+--[[ OS dependent options ]]
+--
+local function is_OS(os)
+  return vim.loop.os_uname().sysname == os
+end
+local function WINDOWS()
+  return is_OS 'Windows_NT'
+end
+
+local function OSX()
+  return is_OS 'Darwin'
+end
+
+function LINUX()
+  return (((vim.fn.has 'unix' == 1) and not (vim.fn.has 'macunix' == 1)) and not (vim.fn.has 'win32unix' == 1))
+end
+
+vim.opt.guifont = { 'DejaVuSansMono NF', ':style=Book', ':h14' }
+vim.opt.guifont = { 'FiraCode NF:h14' }
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
