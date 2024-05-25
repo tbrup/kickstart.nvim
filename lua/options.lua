@@ -74,7 +74,7 @@ local function OSX()
 end
 
 function LINUX()
-  return (((vim.fn.has 'unix' == 1) and not (vim.fn.has 'macunix' == 1)) and not (vim.fn.has 'win32unix' == 1))
+  return is_OS 'Linux'
 end
 
 vim.opt.guifont = { 'DejaVuSansMono NF', ':style=Book', ':h14' }
