@@ -78,7 +78,7 @@ function LINUX()
 end
 
 vim.opt.guifont = { 'DejaVuSansMono NF', ':style=Book', ':h14' }
-vim.opt.guifont = { 'FiraCode NF:h14' }
+vim.opt.guifont = { 'FiraCode Nerd Font:h14' }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
