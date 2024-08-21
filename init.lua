@@ -473,7 +473,7 @@ require('lazy').setup({
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
-    event = { 'ConformInfo' },
+    cmd = { 'ConformInfo' },
     keys = {
       {
         '<leader>f',
@@ -670,7 +670,7 @@ require('lazy').setup({
       --
       -- Examples:
       --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [Q]quote
+      --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
 
